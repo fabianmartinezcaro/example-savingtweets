@@ -16,7 +16,6 @@ function eventListeners () {
         tweets = JSON.parse(localStorage.getItem('tweet')) || [];
         console.log(tweets);
         tweetHTML();
-        limpiarHTML()
     })
 }
 
@@ -26,17 +25,14 @@ function agregarTweet(evento){
     evento.preventDefault();
     const tweet = document.querySelector('#tweet').value;
     const tweetObj = {id: Date.now(), tweet};
-    limpiarHTML();
     
+
     if(tweet === ''){
-        limpiarAlertaError();
         alertaError('Necesitas escribir un tweet.');
         return;
     }
 
     tweets = [...tweets, tweetObj];
-
-    // Guardamos los datos en el localStorage
 
     // Creamos el HTML del tweet
     tweetHTML();
@@ -48,28 +44,30 @@ function agregarTweet(evento){
 
 
 function tweetHTML(){
-    if(tweets.length > 0){
-        tweets.forEach(tweet => {
-            // Boton de eliminar tweet
-            const botonEliminar = document.createElement('a');
-            botonEliminar.classList.add('borrar-tweet');
-            botonEliminar.textContent = 'x';
+    listaTweets.innerHTML = '';
+  if(tweets.length > 0){
+    tweets.forEach(tweet => {
+      // Boton de eliminar tweet
+      const botonEliminar = document.createElement('a');
+      botonEliminar.classList.add('borrar-tweet');
+      botonEliminar.textContent = 'x';
 
-            botonEliminar.onclick = () => {
-                eliminarTweet(tweet.id);
-            }
-
-            // LI
-            const li = document.createElement('li');
-            li.innerText = tweet.tweet;
-
-            listaTweets.appendChild(li);
-            li.appendChild(botonEliminar);
-            // li.appendChild(eliminarTweet);
-        })
+      botonEliminar.onclick = (e) => {
+        e.stopPropagation(); // prevent event from bubbling up
+        eliminarTweet(tweet.id);
     }
-    saveAtLocalStorage(tweets);
+
+      // LI
+      const li = document.createElement('li');
+      li.innerText = tweet.tweet;
+      li.appendChild(botonEliminar);
+      listaTweets.appendChild(li);
+
+    });
+  }
+  saveAtLocalStorage(tweets);
 }
+
 
 function eliminarTweet(id){
     tweets = tweets.filter(tweet => tweet.id !== id)
@@ -83,14 +81,6 @@ function alertaError(error){
     mensajeError.textContent = error;
 
     formulario.appendChild(mensajeError);
-}
-
-
-function limpiarAlertaError(){
-    const alerta = document.querySelector('.error');
-    if(alerta){
-        alerta.remove();
-    }
 }
 
 
